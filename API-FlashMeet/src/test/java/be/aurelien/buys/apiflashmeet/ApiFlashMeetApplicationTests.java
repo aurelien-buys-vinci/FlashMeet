@@ -1,10 +1,10 @@
-package be.aurelien.buys.flashmeet;
+package be.aurelien.buys.apiflashmeet;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class FlashMeetApplicationTests {
+class ApiFlashMeetApplicationTests {
 
   @Test
   void contextLoads() {

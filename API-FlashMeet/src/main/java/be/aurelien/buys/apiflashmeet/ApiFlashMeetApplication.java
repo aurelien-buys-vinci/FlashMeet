@@ -1,13 +1,13 @@
-package be.aurelien.buys.flashmeet;
+package be.aurelien.buys.apiflashmeet;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class FlashMeetApplication {
+public class ApiFlashMeetApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(FlashMeetApplication.class, args);
+    SpringApplication.run(ApiFlashMeetApplication.class, args);
   }
 
 }

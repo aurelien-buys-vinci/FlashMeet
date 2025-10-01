@@ -10,10 +10,10 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>be.aurelien.buys</groupId>
-  <artifactId>FlashMeet</artifactId>
+  <artifactId>API-FlashMeet</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>FlashMeet</name>
-  <description>FlashMeet</description>
+  <name>API-FlashMeet</name>
+  <description>API-FlashMeet</description>
   <url/>
   <licenses>
     <license/>
