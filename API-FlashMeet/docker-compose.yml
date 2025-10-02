@@ -1,0 +1,10 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres_container_flashmeet
+    environment:
+      POSTGRES_DB: flashmeet_db
+      POSTGRES_USER: flashmeet_user
+      POSTGRES_PASSWORD: flashmeet
+    ports:
+      - "5433:5432"
