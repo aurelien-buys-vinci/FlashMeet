@@ -14,5 +14,4 @@ public class AuthenticatedUser {
   private String token;
   private String lastName;
   private String firstName;
-  private String role;
 }
