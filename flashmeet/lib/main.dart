@@ -1,5 +1,7 @@
 import 'package:flashmeet/services/auth_service.dart';
+import 'package:flashmeet/utils/app_theme.dart';
 import 'package:flashmeet/view_models/auth_view_model.dart';
+import 'package:flashmeet/view_models/theme_view_model.dart';
 import 'package:flashmeet/views/screens/home_screen.dart';
 import 'package:flashmeet/views/screens/login_screen.dart';
 import 'package:flashmeet/views/screens/register_screen.dart';
@@ -12,8 +14,15 @@ void main() async {
   final AuthService authService = AuthService();
 
   runApp(
-    ChangeNotifierProvider<AuthViewModel>(
-      create: (context) => AuthViewModel(authService),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthViewModel>(
+          create: (context) => AuthViewModel(authService),
+        ),
+        ChangeNotifierProvider<ThemeViewModel>(
+          create: (context) => ThemeViewModel(),
+        ),
+      ],
       child: const MyApp(),
     ),
   );
@@ -26,52 +35,58 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
 
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      title: 'FlashMeet',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      routerConfig: GoRouter(
-        initialLocation: '/',
-        redirect: (context, state) async {
-          // Attendre que le check d'auth soit terminé
-          if (authViewModel.isLoading) {
-            return null; // On laisse passer pendant le chargement
-          }
+    return Consumer<ThemeViewModel>(
+      builder: (context, themeViewModel, child) {
+        return MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          title: 'FlashMeet',
 
-          final isAuthenticated = authViewModel.isAuthenticated;
-          final isGoingToLogin = state.matchedLocation == '/';
-          final isGoingToRegister = state.matchedLocation == '/register';
+          // Configuration du thème avec dark mode
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: themeViewModel.themeMode,
 
-          // Si l'utilisateur n'est pas connecté et n'est pas déjà sur login/register
-          if (!isAuthenticated && !isGoingToLogin && !isGoingToRegister) {
-            return '/';
-          }
+          routerConfig: GoRouter(
+            initialLocation: '/',
+            redirect: (context, state) async {
+              // Attendre que le check d'auth soit terminé
+              if (authViewModel.isLoading) {
+                return null; // On laisse passer pendant le chargement
+              }
 
-          // Si l'utilisateur est connecté et essaie d'aller sur login/register
-          if (isAuthenticated && (isGoingToLogin || isGoingToRegister)) {
-            return '/home';
-          }
+              final isAuthenticated = authViewModel.isAuthenticated;
+              final isGoingToLogin = state.matchedLocation == '/';
+              final isGoingToRegister = state.matchedLocation == '/register';
 
-          return null; // Pas de redirection
-        },
-        routes: [
-          GoRoute(
-            path: '/',
-            builder: (context, state) => const LoginScreen(),
+              // Si l'utilisateur n'est pas connecté et n'est pas déjà sur login/register
+              if (!isAuthenticated && !isGoingToLogin && !isGoingToRegister) {
+                return '/';
+              }
+
+              // Si l'utilisateur est connecté et essaie d'aller sur login/register
+              if (isAuthenticated && (isGoingToLogin || isGoingToRegister)) {
+                return '/home';
+              }
+
+              return null; // Pas de redirection
+            },
+            routes: [
+              GoRoute(
+                path: '/',
+                builder: (context, state) => const LoginScreen(),
+              ),
+              GoRoute(
+                path: '/register',
+                builder: (context, state) => const RegisterScreen(),
+              ),
+              GoRoute(
+                path: '/home',
+                builder: (context, state) => const HomeScreen(),
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/register',
-            builder: (context, state) => const RegisterScreen(),
-          ),
-          GoRoute(
-            path: '/home',
-            builder: (context, state) => const HomeScreen(),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

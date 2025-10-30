@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import '../../utils/app_colors.dart';
 import '../../view_models/auth_view_model.dart';
+import '../../view_models/theme_view_model.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -36,6 +38,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Consumer<AuthViewModel>(
       builder: (context, authViewModel, child) {
         final currentUser = authViewModel.currentUser;
@@ -50,8 +54,33 @@ class HomeScreen extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('FlashMeet'),
+            title: ShaderMask(
+              shaderCallback: (bounds) => AppColors.primaryGradient.createShader(bounds),
+              child: const Text(
+                'FlashMeet',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
             actions: [
+              // Bouton toggle dark mode
+              Consumer<ThemeViewModel>(
+                builder: (context, themeViewModel, child) {
+                  return IconButton(
+                    icon: Icon(
+                      themeViewModel.themeMode == ThemeMode.dark
+                          ? Icons.light_mode
+                          : Icons.dark_mode,
+                    ),
+                    onPressed: () {
+                      themeViewModel.toggleTheme();
+                    },
+                    tooltip: 'Changer de thème',
+                  );
+                },
+              ),
               IconButton(
                 icon: const Icon(Icons.logout),
                 onPressed: () => _handleLogout(context),
@@ -65,47 +94,57 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Carte de profil
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          CircleAvatar(
+                  // Carte de profil avec gradient
+                  Container(
+                    decoration: const BoxDecoration(
+                      gradient: AppColors.primaryGradient,
+                      borderRadius: BorderRadius.all(Radius.circular(16)),
+                    ),
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: CircleAvatar(
                             radius: 40,
-                            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                            backgroundColor: AppColors.primaryLight,
                             child: Text(
                               '${currentUser.firstName[0]}${currentUser.lastName[0]}',
-                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                  ),
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                color: Colors.white,
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 16),
-                          Text(
-                            currentUser.fullName,
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          currentUser.fullName,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          currentUser.email,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: Colors.white.withValues(alpha: 0.9),
+                          ),
+                        ),
+                        if (currentUser.phoneNumber != null) ...[
                           const SizedBox(height: 4),
                           Text(
-                            currentUser.email,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Colors.grey,
-                                ),
-                          ),
-                          if (currentUser.phoneNumber != null) ...[
-                            const SizedBox(height: 4),
-                            Text(
-                              currentUser.phoneNumber!,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Colors.grey,
-                                  ),
+                            currentUser.phoneNumber!,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: Colors.white.withValues(alpha: 0.9),
                             ),
-                          ],
+                          ),
                         ],
-                      ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -113,9 +152,7 @@ class HomeScreen extends StatelessWidget {
                   // Titre section
                   Text(
                     'Mes FlashMeets',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                    style: theme.textTheme.titleLarge,
                   ),
                   const SizedBox(height: 16),
 
@@ -125,25 +162,31 @@ class HomeScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(32.0),
                       child: Column(
                         children: [
-                          Icon(
-                            Icons.event_busy,
-                            size: 64,
-                            color: Colors.grey[400],
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryLight.withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.event_busy,
+                              size: 40,
+                              color: AppColors.primaryLight,
+                            ),
                           ),
                           const SizedBox(height: 16),
                           Text(
                             'Aucun FlashMeet pour le moment',
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                  color: Colors.grey[600],
-                                ),
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'Créez votre premier FlashMeet pour commencer',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.grey[500],
-                                ),
+                            style: theme.textTheme.bodySmall,
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -152,19 +195,41 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  // Bouton créer un FlashMeet
-                  FilledButton.icon(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Fonctionnalité à venir !'),
+                  // Bouton créer un FlashMeet avec gradient
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: AppColors.primaryGradient,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primaryLight.withValues(alpha: 0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.add),
-                    label: const Text('Créer un FlashMeet'),
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      ],
+                    ),
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Fonctionnalité à venir !'),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      icon: const Icon(Icons.add, color: Colors.white),
+                      label: const Text(
+                        'Créer un FlashMeet',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ],
