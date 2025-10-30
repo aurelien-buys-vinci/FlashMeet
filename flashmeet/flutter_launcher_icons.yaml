@@ -1,0 +1,16 @@
+# Configuration pour flutter_launcher_icons
+# Ce fichier permet de générer automatiquement toutes les icônes d'app
+# pour iOS et Android à partir d'une seule image source
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"  # Chemin vers ton icône (1024x1024px minimum)
+
+  # Options avancées (optionnelles)
+  # adaptive_icon_background: "#FFFFFF"  # Couleur de fond pour Android
+  # adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"  # Pour Android adaptatif
+
+  # Si tu veux un icône arrondi sur iOS
+  # remove_alpha_ios: true
+
